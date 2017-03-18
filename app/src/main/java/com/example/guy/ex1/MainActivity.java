@@ -40,6 +40,17 @@ public class MainActivity extends AppCompatActivity
     }
 
     /**
+     * Saves current state's variables after onDestroy (e.g  on screen orientation)
+     * @param outState bundle in which to place our saved state
+     */
+    @Override
+    protected void onSaveInstanceState(Bundle outState)
+    {
+        super.onSaveInstanceState(outState);
+        outState.putParcelableArrayList("_chatMessages", _chatMessages);
+    }
+
+    /**
      * Handles the activity creation
      * @param savedInstanceState the activity's saved instance
      */
@@ -49,8 +60,17 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        _chatMessages = new ArrayList<ChatMessage>();
-        ChatMessage._colorBase = new HashMap<String, Integer>();
+        // Check if don't need to restore objects
+        if (null == savedInstanceState)
+        {
+            _chatMessages = new ArrayList<ChatMessage>();
+            ChatMessage._colorBase = new HashMap<String, Integer>();
+        }
+        else    // If objects were restored, we populate list view again
+        {
+            _chatMessages = savedInstanceState.getParcelableArrayList("_chatMessages");
+            _populateListView();
+        }
 
         // Sets a button event listener
         final Button sendButton = (Button)findViewById(R.id.sendButton);
